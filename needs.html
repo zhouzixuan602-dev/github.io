@@ -2,104 +2,327 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Needs Board · Research Consortium</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="./styles.css"/>
+  <title>Needs · Research Consortium Platform</title>
+  <meta name="description" content="Post collaboration needs for an open neuroscience and BCI research consortium." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    .needs-wrap { max-width: 900px; margin: 40px auto; }
-    .need-card {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 14px;
-      background: rgba(255,255,255,.03);
+    :root{
+      --bg:#0b0d12;
+      --panel:#111522;
+      --text:#e9ecf2;
+      --muted:#aab2c0;
+      --line:rgba(255,255,255,.12);
+
+      --brand1:#7c3aed;
+      --brand2:#22d3ee;
+
+      --radius:16px;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --max:1080px;
     }
-    .need-card h3 { margin: 0 0 6px; }
-    .need-meta { font-size: .85rem; color: var(--muted); }
-    .need-form input, .need-form textarea, .need-form select {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: transparent;
-      color: inherit;
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(800px 500px at 15% 10%, rgba(124,58,237,.16), transparent 55%),
+        radial-gradient(800px 500px at 85% 20%, rgba(34,211,238,.14), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ width:min(var(--max), calc(100% - 40px)); margin:0 auto; }
+
+    /* Topbar */
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(10px);
+      background:rgba(11,13,18,.55);
+      border-bottom:1px solid var(--line);
+    }
+    .topbar__inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .brand__mark{
+      width:14px;height:14px;border-radius:6px;
+      background:linear-gradient(135deg,var(--brand1),var(--brand2));
+      box-shadow:0 0 0 4px rgba(124,58,237,.18);
+    }
+    .nav{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .nav a{
+      color:var(--muted);
+      font-weight:600;
+      font-size:.92rem;
+      padding:6px 10px;
+      border-radius:10px;
+    }
+    .nav a:hover{
+      color:var(--text);
+      background:rgba(255,255,255,.05);
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height:38px;
+      padding:0 14px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:.92rem;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+    }
+    .btn--primary{
+      border:0;
+      background:linear-gradient(135deg,var(--brand1),var(--brand2));
+      color:#071018;
+    }
+
+    /* Layout */
+    main{ padding:40px 0 60px; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.4fr .6fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    /* Main card */
+    .card{
+      background:rgba(17,21,34,.55);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:26px;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:2rem;
+      letter-spacing:-.4px;
+    }
+    .lead{
+      margin:0 0 18px;
+      color:var(--muted);
+      max-width:65ch;
+    }
+
+    .section{
+      margin-top:22px;
+    }
+    .section h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+    }
+    .section p{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+    ul{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+    li{ margin:6px 0; }
+
+    /* Sidebar */
+    .side{
+      background:rgba(17,21,34,.55);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+    .side h3{
+      margin:0 0 10px;
+      font-size:1.05rem;
+    }
+    .side p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:.93rem;
+    }
+    .side ol{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+    .side li{ margin:10px 0; }
+
+    .kbd{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:.82rem;
+      padding:2px 6px;
+      border-radius:8px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+    }
+
+    /* CTA */
+    .cta{
+      margin-top:24px;
+      padding:20px;
+      border-radius:var(--radius);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(124,58,237,.22), rgba(34,211,238,.14));
+    }
+    .cta h3{ margin:0 0 6px; }
+    .cta p{ margin:0 0 12px; color:#eef; font-weight:600; }
+
+    /* Responsive */
+    @media (max-width:900px){
+      .grid{ grid-template-columns:1fr; }
     }
   </style>
 </head>
 
 <body>
-  <main class="wrap needs-wrap">
-    <h1>Needs Board</h1>
-    <p class="lead">
-      Post concrete research or engineering needs.  
-      Think tasks, not papers.
-    </p>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="./contact.html">
+        <span class="brand__mark"></span>
+        Research Consortium Platform
+      </a>
 
-    <!-- Post Form -->
-    <section class="need-form">
-      <h2>Post a Need</h2>
-      <input id="title" placeholder="Short title (clear outcome)" />
-      <select id="type">
-        <option>Research</option>
-        <option>Engineering</option>
-        <option>Clinical</option>
-        <option>Funding</option>
-      </select>
-      <textarea id="desc" placeholder="Context / background"></textarea>
-      <textarea id="input" placeholder="What input you provide"></textarea>
-      <textarea id="output" placeholder="What output you expect"></textarea>
-      <input id="contact" placeholder="Contact (email / link)" />
-      <button class="btn btn--primary" onclick="postNeed()">Post</button>
-    </section>
+      <nav class="nav">
+        <a href="./needs.html">Needs</a>
+        <a href="./capabilities.md">Capabilities</a>
+        <a href="./collaboration.md">Collaboration</a>
+        <a href="./governance.md">Governance</a>
+      </nav>
 
-    <hr style="margin:30px 0"/>
+      <a class="btn btn--primary" href="#join">Join</a>
+    </div>
+  </header>
 
-    <!-- Needs List -->
-    <section>
-      <h2>Open Needs</h2>
-      <div id="needsList"></div>
-    </section>
+  <main class="wrap">
+    <div class="grid">
+      <!-- Main content -->
+      <div class="card">
+        <h1>Post a Need</h1>
+        <p class="lead">
+          “Needs” are small, concrete collaboration requests.
+          Write them clearly and the network can match you faster.
+        </p>
+
+        <div class="section">
+          <h2>What belongs here</h2>
+          <ul>
+            <li>Technical help (analysis, modeling, hardware, software)</li>
+            <li>Access to data, equipment, participants, or labs</li>
+            <li>Short-term research or co-development tasks</li>
+            <li>Funding, validation, or deployment gaps</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>Where needs live (current MVP)</h2>
+          <p>
+            For now, all needs are stored in a single open document:
+            <span class="kbd">needs.md</span>.
+            This keeps everything transparent, versioned, and auditable.
+          </p>
+
+          <p>
+            You can open the file, add a new section, and commit.
+          </p>
+
+          <p style="margin-top:10px;">
+            <a class="btn btn--primary" href="./needs.md">Open needs.md</a>
+            <a class="btn" href="https://github.com/zhouzixuan602-dev/zhouzixuan602-dev.github.io" target="_blank">
+              View repository
+            </a>
+          </p>
+        </div>
+
+        <section class="cta" id="join">
+          <h3>Submit via email (fallback)</h3>
+          <p>
+            If GitHub editing isn’t convenient, send a structured email and it will be added.
+          </p>
+          <a class="btn btn--primary"
+             href="mailto:zhouzixuan602@gmail.com?subject=Need%20Posted%20-%20Research%20Consortium&body=Title:%0AContext:%0AWhat%20I%20need:%0AWhat%20I%20offer:%0ATime%20window:%0AContact:">
+            Email this need
+          </a>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="side" aria-label="Need posting checklist">
+        <h3>Posting checklist (MVP)</h3>
+
+        <p>
+          Treat a need like an executable task, not a vague idea.
+        </p>
+
+        <ol>
+          <li>
+            <b>One-line title</b><br/>
+            <span class="kbd">Goal + context</span>
+          </li>
+
+          <li>
+            <b>Inputs / Outputs / Acceptance</b><br/>
+            <span class="kbd">Provide</span> → <span class="kbd">Need</span> → <span class="kbd">Done means…</span>
+          </li>
+
+          <li>
+            <b>Time window</b><br/>
+            Availability, urgency, async vs sync
+          </li>
+
+          <li>
+            <b>What you offer</b><br/>
+            Authorship, funding, data, compute, credit
+          </li>
+
+          <li>
+            <b>Next step</b><br/>
+            Email, GitHub issue, short call
+          </li>
+        </ol>
+
+        <p style="margin-top:14px;">
+          <b>Flow:</b> draft → add to <span class="kbd">needs.md</span> → commit → visible
+        </p>
+
+        <p style="margin-top:10px; color:var(--muted); font-size:.92rem;">
+          Next: this will evolve into a structured form,
+          while remaining open and versioned.
+        </p>
+      </aside>
+    </div>
   </main>
-
-<script>
-const KEY = "needs-board";
-
-function loadNeeds() {
-  const list = JSON.parse(localStorage.getItem(KEY) || "[]");
-  const el = document.getElementById("needsList");
-  el.innerHTML = "";
-  list.forEach(n => {
-    const div = document.createElement("div");
-    div.className = "need-card";
-    div.innerHTML = `
-      <h3>${n.title}</h3>
-      <div class="need-meta">${n.type} · ${n.contact}</div>
-      <p><b>Context:</b> ${n.desc}</p>
-      <p><b>Input:</b> ${n.input}</p>
-      <p><b>Output:</b> ${n.output}</p>
-    `;
-    el.appendChild(div);
-  });
-}
-
-function postNeed() {
-  const need = {
-    title: title.value,
-    type: type.value,
-    desc: desc.value,
-    input: input.value,
-    output: output.value,
-    contact: contact.value
-  };
-  const list = JSON.parse(localStorage.getItem(KEY) || "[]");
-  list.unshift(need);
-  localStorage.setItem(KEY, JSON.stringify(list));
-  loadNeeds();
-  document.querySelectorAll(".need-form input, .need-form textarea").forEach(i => i.value="");
-}
-
-loadNeeds();
-</script>
 </body>
 </html>
