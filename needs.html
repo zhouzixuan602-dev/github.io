@@ -773,6 +773,8 @@ function computeNeedVector(post){
 
     time_pressure: post.time_model?.urgency ?? "low",
   };
+  console.log("Need vector:", vec);   
+  return vec;
 }
   function setCoverPreview(dataUrl){
     coverDataUrl = dataUrl || "";
@@ -955,6 +957,7 @@ function computeNeedVector(post){
   }
 
   function card(post){
+    console.log("render post:", post);
     const vector = computeNeedVector(post);
     console.log("Need vector:", vector);
     
