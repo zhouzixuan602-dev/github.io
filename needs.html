@@ -695,6 +695,7 @@
     cover: el("f_cover"),
     coverPreview: el("coverPreview"),
     clearCover: el("clearCover"),
+  };
   let coverDataUrl = "";
 
   function nowISO(){
@@ -732,13 +733,14 @@
   // 2. 再异步推送远端
   try{
     await fetch("/api/needs", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(posts)
-        updatedAt: nowISO(),
-      posts
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    updatedAt: nowISO(),
+    posts: posts
   })
-  });
+});
+
   }catch(e){
     // 离线 / 失败不影响本地体验
   }
@@ -822,11 +824,11 @@
     return "";
   }
 
-  function publish(){
+  async function publish(){
     const msg = validate();
     if(msg){ alert(msg); return; }
 
-    const posts = load();
+    const posts = await load();
     const post = {
       id: uid(),
       createdAt: nowISO(),
@@ -842,11 +844,13 @@
       cover: coverDataUrl,
     };
     posts.unshift(post);
-    save(posts);
+    await save(posts);
     resetForm(false);
     render();
     // jump to browse area on mobile
-    document.getElementById("browse").scrollIntoView({behavior:"smooth", block:"start"});
+    document
+      .getElementById("browse")
+      .scrollIntoView({behavior:"smooth", block:"start"});
   }
 
   function resetForm(clearCoverAlso=true){
@@ -1068,8 +1072,8 @@
   tagFilterEl.addEventListener("change", render);
   sortByEl.addEventListener("change", render);
 
-  el("seedBtn").addEventListener("click", () => {
-    const posts = load();
+  el("seedBtn").addEventListener("click", async () => {
+    const posts = await load();
     posts.unshift({
       id: uid(),
       createdAt: nowISO(),
@@ -1084,7 +1088,7 @@
       contact: "zhouzixuan602@gmail.com",
       cover: "",
     });
-    save(posts);
+    await save(posts);
     render();
   });
 
