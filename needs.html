@@ -704,28 +704,32 @@
   }
 
   async function load(){
-  // 1. 先读本地，保证秒开
   let local = [];
-  try{
-    local = JSON.parse(localStorage.getItem(KEY) || "[]");
-  }catch(e){}
 
-  // 2. 再异步拉远端
-  try{
+  // 1. 本地读取
+  try {
+    local = JSON.parse(localStorage.getItem(KEY) || "[]");
+  } catch (e) {
+    local = [];
+  }
+
+  // 2. 远端读取（失败不影响）
+  try {
     const res = await fetch("/api/needs");
-    if(res.ok){
+    if (res.ok) {
       const remote = await res.json();
-      // 用远端覆盖本地
-    if(Array.isArray(remote) && remote.length > 0){
-      localStorage.setItem(KEY, JSON.stringify(remote));
-      return remote;
+      if (Array.isArray(remote) && remote.length > 0) {
+        localStorage.setItem(KEY, JSON.stringify(remote));
+        return remote;
+      }
     }
-  }catch(e){
-    // 网络失败，静默回退
+  } catch (e) {
+    // 静默失败
   }
 
   return local;
 }
+
 
   async function save(posts){
   // 1. 先本地保存（立刻生效）
