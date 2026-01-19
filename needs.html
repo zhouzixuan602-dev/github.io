@@ -878,7 +878,6 @@
   await save(posts);
   resetForm(false);
   render();
-}
 
     // jump to browse area on mobile
     document
@@ -1045,10 +1044,10 @@
       del.textContent = "Delete (local)";
       top.querySelector("div").insertBefore(del, top.querySelector("div").firstChild);
     }
-    del.onclick = () => {
+    del.onclick = async () => {
       if(!confirm("Delete this post from THIS browser?")) return;
       const posts = load().filter(p => p.id !== post.id);
-      save(posts);
+      await save(posts);
       closeModal();
       render();
     };
@@ -1065,8 +1064,8 @@
     if(e.target === el("modalBack")) closeModal();
   });
 
-  function render(){
-    let posts = load();
+  async function render(){
+    let posts = await load();
 
     // controls
     renderTagOptions(posts);
