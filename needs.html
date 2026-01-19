@@ -842,7 +842,39 @@
       tags: normalizeTags(f.tags.value),
       contact: f.contact.value.trim(),
       cover: coverDataUrl,
-    };
+      // ===== 2.3A ADDITIONS =====
+
+  const tags = normalizeTags(f.tags.value);
+
+task_model: {
+  domain: "neural_decoding",
+  modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
+  task_type: ["benchmark"],
+  target_level: "population",
+},
+
+
+  outcome_structured: {
+    artifacts: ["dataset", "code"],  
+    metrics: ["accuracy", "ITR"],    
+    reproducibility: "cross-lab",    
+  },
+
+  collaboration_mode: {
+    roles_needed: [
+      "data_provider",
+      "method_partner",
+      "replication_lab"
+    ],
+    coordination: "async",           
+  },
+
+  time_model: {
+    urgency: "medium",               
+    expected_duration_weeks: 8,      
+  },
+}; 
+    
     posts.unshift(post);
     await save(posts);
     resetForm(false);
@@ -1074,20 +1106,47 @@
 
   el("seedBtn").addEventListener("click", async () => {
     const posts = await load();
-    posts.unshift({
-      id: uid(),
-      createdAt: nowISO(),
-      title: "Need: EEG dataset for SSVEP benchmark (500+ subjects)",
-      outcome: "Deliverable: reproducible benchmark set + baseline model results",
-      deadline: "2026-03-15",
-      window: "Reply in 48h, UTC+8 afternoons",
-      context: "We’re building a cross-lab SSVEP benchmarking suite. Current status: pilot dataset (n=40). Need a larger dataset or partners with access.\nConstraints: device type, sampling rate, and subject metadata availability.",
-      need: "- Dataset access (EEG SSVEP)\n- Advice on IRB/data sharing\n- Validation / baseline pipelines",
-      offer: "- Authorship / acknowledgement\n- Compute credits + co-dev support\n- Shared benchmarking code + docs",
-      tags: ["EEG","SSVEP","dataset","benchmark"],
-      contact: "zhouzixuan602@gmail.com",
-      cover: "",
-    });
+   const tags = ["EEG","SSVEP","dataset","benchmark"];
+
+posts.unshift({
+  id: uid(),
+  createdAt: nowISO(),
+  title: "Need: EEG dataset for SSVEP benchmark (500+ subjects)",
+  outcome: "Deliverable: reproducible benchmark set + baseline model results",
+  deadline: "2026-03-15",
+  window: "Reply in 48h, UTC+8 afternoons",
+  context: "We’re building a cross-lab SSVEP benchmarking suite. Current status: pilot dataset (n=40). Need a larger dataset or partners with access.\nConstraints: device type, sampling rate, and subject metadata availability.",
+  need: "- Dataset access (EEG SSVEP)\n- Advice on IRB/data sharing\n- Validation / baseline pipelines",
+  offer: "- Authorship / acknowledgement\n- Compute credits + co-dev support\n- Shared benchmarking code + docs",
+  tags,
+  contact: "zhouzixuan602@gmail.com",
+  cover: "",
+
+  // ===== 2.3A ADDITIONS (seed) =====
+  task_model: {
+    domain: "neural_decoding",
+    modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
+    task_type: ["benchmark"],
+    target_level: "population",
+  },
+
+  outcome_structured: {
+    artifacts: ["dataset","code"],
+    metrics: ["accuracy","ITR"],
+    reproducibility: "cross-lab",
+  },
+
+  collaboration_mode: {
+    roles_needed: ["data_provider","method_partner","replication_lab"],
+    coordination: "async",
+  },
+
+  time_model: {
+    urgency: "medium",
+    expected_duration_weeks: 8,
+  },
+});
+
     await save(posts);
     render();
   });
