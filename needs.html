@@ -1037,72 +1037,85 @@ const analytics = getAnalytics(app);
   }
 
   async function publish(){
-    const msg = validate();
-    if(msg){ alert(msg); return; }
+  const msg = validate();
+  if(msg){ alert(msg); return; }
 
-    const tags = normalizeTags(f.tags.value);
+  // ① tags：唯一来源（表单 -> normalizeTags）
+  const tags = normalizeTags(f.tags.value);
 
-    // 2.3A base post
-    const base = {
-      id: uid(),
-      createdAt: nowISO(),
-      title: f.title.value.trim(),
-      outcome: f.outcome.value.trim(),
-      deadline: f.deadline.value.trim(),
-      window: f.window.value.trim(),
-      context: f.context.value.trim(),
-      need: f.need.value.trim(),
-      offer: f.offer.value.trim(),
-      tags,
-      contact: f.contact.value.trim(),
-      cover: coverDataUrl,
-    };
+  // ② base：只放“用户显式输入”的字段（并把空字符串规整成 ""）
+  const base = {
+    id: uid(),
+    createdAt: nowISO(),          // 用于你现有 formatTime(new Date(iso))
+    createdAtMs: Date.now(),      // 额外：机器排序/调试用
+    title: (f.title.value || "").trim(),
+    outcome: (f.outcome.value || "").trim(),
+    deadline: (f.deadline.value || "").trim(),
+    window: (f.window.value || "").trim(),
+    context: (f.context.value || "").trim(),
+    need: (f.need.value || "").trim(),
+    offer: (f.offer.value || "").trim(),
+    tags,
+    contact: (f.contact.value || "").trim(),
+    cover: coverDataUrl || "",
+  };
 
-    // system inference (optional)
-    const inferred = computeNeedInference(base);
+  // ③ inferred：只从 base 推断（避免出现“推断基于 post、post 又依赖推断”的闭环）
+  const inferred = computeNeedInference(base) || {};
 
-    const post = {
-      ...base,
+  // ④ 2.3A schema：让“显式 schema”与 inferred 保持一致（但不强制别人必须填）
+  const post = {
+    ...base,
 
-      // explicit schema (optional now; helpful later)
-      task_model: {
-        domain: inferred.task_model?.domain ?? "unknown",
-        modality: inferred.task_model?.modality ?? tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
-        task_type: ["benchmark"],
-        target_level: "population",
-      },
-      outcome_structured: {
-        artifacts: ["dataset","code"],
-        metrics: ["accuracy","ITR"],
-        reproducibility: "cross-lab",
-      },
-      collaboration_mode: {
-        roles_needed: inferred.collaboration_mode?.roles_needed ?? [],
-        coordination: "async",
-      },
-      time_model: {
-        urgency: "medium",
-        expected_duration_weeks: 8,
-      },
+    task_model: {
+      domain: inferred.task_model?.domain ?? "unknown",
+      modality: inferred.task_model?.modality ?? tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
+      task_type: ["benchmark"],
+      target_level: "population",
+    },
 
-      _system: {
-        inferred: inferred,
-        confidence: 0.2
-      }
-    };
+    outcome_structured: {
+      // 你现在是 demo：先固定；以后可由表单/推断再细化
+      artifacts: ["dataset","code"],
+      metrics: ["accuracy","ITR"],
+      reproducibility: "cross-lab",
+    },
 
-    try{
-      // Use post.id as doc id so delete is easy
-      await colRef.doc(post.id).set(post, { merge: true });
-      resetForm(false);
+    collaboration_mode: {
+      roles_needed: inferred.collaboration_mode?.roles_needed ?? [],
+      coordination: "async",
+    },
 
-      document.getElementById("browse")
-        .scrollIntoView({behavior:"smooth", block:"start"});
-    }catch(e){
-      alert("Publish failed. Check Firestore rules / config.");
-      console.error(e);
+    time_model: {
+      urgency: "medium",
+      expected_duration_weeks: 8,
+    },
+
+    _system: {
+      inferred,
+      confidence: 0.2,
+      schema: "2.3A",
+    },
+  };
+
+  // ⑤ 写入 Firestore
+  try{
+    if(!colRef || typeof colRef.doc !== "function"){
+      throw new Error("colRef is not initialized. Check Firebase init + collection name.");
     }
+
+    await colRef.doc(post.id).set(post, { merge: true });
+
+    // 体验：清空表单 + 滚到 browse
+    resetForm(false);
+    document.getElementById("browse")
+      .scrollIntoView({behavior:"smooth", block:"start"});
+  }catch(e){
+    console.error("Publish failed:", e);
+    alert("Publish failed. Check Firestore config/rules/console.");
   }
+}
+
 
   async function seedSample(){
     const tags = ["EEG","SSVEP","dataset","benchmark"];
