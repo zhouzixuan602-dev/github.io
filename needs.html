@@ -487,26 +487,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 
-<script>
-  
-const firebaseConfig = {
-  apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
-  authDomain: "research-consortium-136f7.firebaseapp.com",
-  projectId: "research-consortium-136f7",
-  storageBucket: "research-consortium-136f7.firebasestorage.app",
-  messagingSenderId: "423748170210",
-  appId: "1:423748170210:web:77b4a04db5dd01135849bb",
-  measurementId: "G-G5N1DLFGHW"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const COL = "needs_board_posts";
-</script>
-
   
 <body>
   <header class="topbar">
@@ -677,7 +657,7 @@ const analytics = getAnalytics(app);
   console.log("SCRIPT START");
 
   // ====== Firebase (make sure you filled firebaseConfig above) ======
-  const COL = "needs_board_posts";
+  
   const colRef = firebase.firestore().collection(COL);
 
   // --- Step 2.1 local cache key (optional but useful) ---
