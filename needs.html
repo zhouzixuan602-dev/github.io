@@ -1000,6 +1000,9 @@
   // ===== Init Firebase (compat mode) =====
  firebase.initializeApp(firebaseConfig);
 
+// ✅【必须】初始化 Firebase（compat 写法）
+  firebase.initializeApp(firebaseConfig);
+  
   // ===== Firestore =====
   const COL = "needs_board_posts";
 </script>
@@ -1898,7 +1901,7 @@
 
   // ====== Firebase (make sure you filled firebaseConfig above) ======
   
-  const colRef = firebase.firestore().collection(COL);
+  const colRef = db.collection(COL);
 
   // --- Step 2.1 local cache key (optional but useful) ---
   const KEY = "rcp_needs_board_v1";
