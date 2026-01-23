@@ -7,96 +7,96 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<!-- ✅ 你的 CSS：一行都没动 -->
-<link rel="stylesheet" href="./styles.css">
+<style>
+body{
+  margin:0;
+  font-family:Inter,system-ui;
+  background:#0b0d12;
+  color:#e9ecf2;
+}
+main{max-width:900px;margin:40px auto;padding:0 20px;}
+h1{margin-bottom:8px;}
+.card{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+  background:rgba(255,255,255,.03);
+}
+input,textarea,button{
+  width:100%;
+  margin:6px 0;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.2);
+  background:#111;
+  color:#fff;
+}
+button{
+  background:#7c3aed;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
+<main>
+<h1>Needs Board</h1>
 
-<header class="topbar">
-  <div class="wrap topbar__inner">
-    <a class="brand" href="./index.html">
-      <span class="brand__mark"></span>
-      <span class="brand__name">Research Consortium Platform</span>
-    </a>
+<section class="card">
+<h3>Post a Need</h3>
+<input id="title" placeholder="Title"/>
+<textarea id="context" placeholder="Context"></textarea>
+<button id="publish">Publish</button>
+</section>
 
-    <nav class="nav">
-      <a class="active" href="./index.html">Needs</a>
-      <a href="./capabilities.html">Capabilities</a>
-      <a href="./collaboration.html">Collaboration</a>
-      <a href="./governance.html">Governance</a>
-    </nav>
-  </div>
-</header>
-
-<main class="wrap">
-  <h1>Needs Board</h1>
-  <p class="sub">
-    Post collaboration needs and browse them in real time.
-  </p>
-
-  <div class="panel">
-    <div class="panelHead"><b>Board feed</b></div>
-    <div class="feed">
-      <div class="masonry" id="list"></div>
-      <div id="empty" style="display:none;color:#aab2c0;">No posts yet.</div>
-    </div>
-  </div>
+<section>
+<h3>Board</h3>
+<div id="list"></div>
+</section>
 </main>
 
-<!-- ================= Firebase ================= -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-/* ===== Firebase init (ONLY ONCE) ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
   authDomain: "research-consortium-136f7.firebaseapp.com",
   projectId: "research-consortium-136f7",
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const colRef = db.collection("needs"); // ⚠️ 必须和 rules 一致
+const colRef = db.collection("needs");
 
-const listEl = document.getElementById("list");
-const emptyEl = document.getElementById("empty");
+const list = document.getElementById("list");
 
-function render(posts){
-  listEl.innerHTML = "";
-  posts.forEach(p => {
+colRef.orderBy("createdAt","desc").onSnapshot(snap=>{
+  list.innerHTML="";
+  snap.forEach(doc=>{
+    const d = doc.data();
     const div = document.createElement("div");
-    div.className = "post";
-    div.innerHTML = `
-      <div class="postBody">
-        <h3 class="postTitle">${p.title || "Untitled"}</h3>
-        <p class="postOutcome">${p.outcome || ""}</p>
-      </div>
-    `;
-    listEl.appendChild(div);
+    div.className="card";
+    div.innerHTML = `<b>${d.title}</b><p>${d.context}</p>`;
+    list.appendChild(div);
   });
-  emptyEl.style.display = posts.length ? "none" : "block";
-}
+});
 
-/* ===== Realtime ===== */
-colRef.orderBy("createdAt", "desc").onSnapshot(
-  snap => {
-    const posts = [];
-    snap.forEach(d => posts.push(d.data()));
-    render(posts);
-  },
-  err => {
-    console.error(err);
-    alert("Firestore read failed. Check rules.");
-  }
-);
+document.getElementById("publish").onclick = async ()=>{
+  const title = document.getElementById("title").value.trim();
+  const context = document.getElementById("context").value.trim();
+  if(!title || !context) return alert("Fill all fields");
+  await colRef.add({
+    title, context,
+    createdAt: new Date().toISOString()
+  });
+};
 </script>
-
 </body>
 </html>
